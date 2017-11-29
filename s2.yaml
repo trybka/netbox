@@ -1,0 +1,7 @@
+# This is the URL of your S2 Netbox
+url: http://my.netbox.com/goforms/nbapi
+# These correspond to Access Levels for all or no access
+all_access: All Doors 24/7
+no_access: None
+# Custom Card Format
+card_format: My Cool Format 26 bit
