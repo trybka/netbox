@@ -167,7 +167,7 @@ def do_audit():
 if __name__ == '__main__':
   try:  
     # By default, add new members
-    add_new_members('new2018.csv')
+    add_new_members('new2020.csv')
     # do_audit()
   except:
     # Cool exeception handling from https://stackoverflow.com/a/242514
