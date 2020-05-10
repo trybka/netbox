@@ -5,6 +5,7 @@ import csv
 import urllib2
 import yaml
 import xmltodict
+import datetime
 import traceback, sys, code
 
 # Some helpful constants.
@@ -68,6 +69,13 @@ def disable_credential(personid=None, cardid=None):
     cred_params['DISABLED'] = 1
     execute(get_cmd('ModifyCredential', cred_params))
 
+def set_expiration(personid=None, expiry=None):
+  if not isinstance(expiry, datetime.datetime):
+    expiry = datetime.datetime.now()  # better expire nowish    
+  modify_params = {'EXPDATE': expiry}
+  if personid is not None:
+    modify_params['PERSONID'] = personid
+    execute(get_cmd('ModifyPerson', modify_params))
 
 def add_person(lastname=None, firstname=None):
   """Adds a new person with full access."""
@@ -168,8 +176,11 @@ def do_audit():
     response = execute(get_search(nextkey=nextkey))
     to_process.extend(get_people(response)['PERSON'])
     nextkey = response['DETAILS']['NEXTKEY']
+  import pdb
+  pdb.set_trace()
   for person in to_process:
-    if has_access(person) and person['LASTNAME'] not in people:
+    if has_access(person): # and person['LASTNAME'] not in people:
+      pdb.set_trace()
       print '%s,%s' % (person['LASTNAME'], person['FIRSTNAME'])
 
 
