@@ -61,13 +61,19 @@ def remove_access(personid=None, cardid=None):
     execute(get_cmd('ModifyPerson', search_params))
 
 
-def disable_credential(personid=None, cardid=None):
+def modify_credential(personid=None, cardid=None, enabled=None):
   cred_params = {'CARDFORMAT': CONFIG['card_format']}
-  if personid is not None and cardid is not None:
+  if personid is not None and cardid is not None and enabled is not None:
     cred_params['PERSONID'] = personid
     cred_params['ENCODEDNUM'] = cardid
-    cred_params['DISABLED'] = 1
+    cred_params['DISABLED'] = 0 if enabled else 1
     execute(get_cmd('ModifyCredential', cred_params))
+
+def disable_credential(personid=None, cardid=None):
+  modify_credential(personid, cardid, False)
+
+def enable_credential(personid=None, cardid=None):
+  modify_credential(personid, cardid, True)
 
 def set_expiration(personid=None, expiry=None):
   if not isinstance(expiry, datetime.datetime):
@@ -198,7 +204,12 @@ def do_audit_hard():
     if person['Action'] == 'Keep':
       continue
     if person['Action'] == 'Disable':
-      disable_credential(personid=personid, cardid=person["CardNum"])
+      # 5/10 Temporarily re-enable
+      log_mod = "{}, {} enabled".format(person['Last'], person['First'])
+      print(log_mod)
+      enable_credential(personid=personid, cardid=person["CardNum"])
+      # 5/25 Disable same.
+      # disable_credential(personid=personid, cardid=person["CardNum"])
     if person['Action'] == 'Remove':
       remove_access(personid=personid, cardid=person["CardNum"])
 
