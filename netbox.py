@@ -176,19 +176,15 @@ def do_audit():
     response = execute(get_search(nextkey=nextkey))
     to_process.extend(get_people(response)['PERSON'])
     nextkey = response['DETAILS']['NEXTKEY']
-  import pdb
-  pdb.set_trace()
   for person in to_process:
-    if has_access(person): # and person['LASTNAME'] not in people:
-      pdb.set_trace()
+    if has_access(person) and person['LASTNAME'] not in people:
       print '%s,%s' % (person['LASTNAME'], person['FIRSTNAME'])
 
 
 #  Last,First,ID,CardNum,Status,Action,Last Date,Last Time,Last Month,Last Day,Last Year,NOTES
-#  Klimek,Joe,72,99756,Active,Keep,"May 21, 2016",1:36:43 PM,May,21,2016,
-#  Dennis,Ryan,202,1883782,Active,Remove,"Oct 29, 2017",1:43:49 PM,Oct,29,2017,
-#  Bessette,Kyle,198,1883772,Active,Remove,"Sep 24, 2017",11:40:02 AM,Sep,24,2017,
-#  Galati,Corin,204,1883780,Active,Disable,"Oct 27, 2018",3:03:01 PM,Oct,27,2018,
+#  Kilek,Bro,72,99756,Active,Keep,"May 21, 2016",1:36:43 PM,May,21,2016,
+#  Drennis,Bryan,202,1883782,Active,Remove,"Oct 29, 2017",1:43:49 PM,Oct,29,2017,
+#  Gammati,Colin,204,1883780,Active,Disable,"Oct 27, 2018",3:03:01 PM,Oct,27,2018,
 def do_audit_hard():
   people = {}
   with open('corona_roster.csv') as f:
