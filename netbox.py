@@ -60,6 +60,15 @@ def remove_access(personid=None, cardid=None):
     execute(get_cmd('ModifyPerson', search_params))
 
 
+def disable_credential(personid=None, cardid=None):
+  cred_params = {'CARDFORMAT': CONFIG['card_format']}
+  if personid is not None and cardid is not None:
+    cred_params['PERSONID'] = personid
+    cred_params['ENCODEDNUM'] = cardid
+    cred_params['DISABLED'] = 1
+    execute(get_cmd('ModifyCredential', cred_params))
+
+
 def add_person(lastname=None, firstname=None):
   """Adds a new person with full access."""
   search_params = {'ACCESSLEVELS': [{'ACCESSLEVEL': CONFIG['all_access']}]}
@@ -164,11 +173,34 @@ def do_audit():
       print '%s,%s' % (person['LASTNAME'], person['FIRSTNAME'])
 
 
+#  Last,First,ID,CardNum,Status,Action,Last Date,Last Time,Last Month,Last Day,Last Year,NOTES
+#  Klimek,Joe,72,99756,Active,Keep,"May 21, 2016",1:36:43 PM,May,21,2016,
+#  Dennis,Ryan,202,1883782,Active,Remove,"Oct 29, 2017",1:43:49 PM,Oct,29,2017,
+#  Bessette,Kyle,198,1883772,Active,Remove,"Sep 24, 2017",11:40:02 AM,Sep,24,2017,
+#  Galati,Corin,204,1883780,Active,Disable,"Oct 27, 2018",3:03:01 PM,Oct,27,2018,
+def do_audit_hard():
+  people = {}
+  with open('corona_roster.csv') as f:
+    cf = csv.DictReader(f)
+    for person in cf:
+      people[person['ID']] = person
+  
+  for idnum in people:
+    person = people[idnum]
+    personid = '_' + idnum
+    if person['Action'] == 'Keep':
+      continue
+    if person['Action'] == 'Disable':
+      disable_credential(personid=personid, cardid=person["CardNum"])
+    if person['Action'] == 'Remove':
+      remove_access(personid=personid, cardid=person["CardNum"])
+
+
 if __name__ == '__main__':
   try:  
     # By default, add new members
-    add_new_members('new2020.csv')
-    # do_audit()
+    #add_new_members('new2020.csv')
+    do_audit_hard()
   except:
     # Cool exeception handling from https://stackoverflow.com/a/242514
     type, value, tb = sys.exc_info()
