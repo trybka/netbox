@@ -2,7 +2,7 @@
 from itertools import groupby
 import copy
 import csv
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import yaml
 import xmltodict
 import datetime
@@ -28,9 +28,9 @@ CONFIG = GetConfig('s2.yaml')
 
 def post(url, data, contenttype):
   """Sends a POST request to the given URL."""
-  request = urllib2.Request(url, data)
+  request = urllib.request.Request(url, data)
   request.add_header('Content-Type', contenttype)
-  response = urllib2.urlopen(request)
+  response = urllib.request.urlopen(request)
   return response.read()
 
 
@@ -142,15 +142,15 @@ def add_new_members(fname):
     for person in cf:
       people[person['last']] = person
 
-  for person in people.itervalues():
+  for person in people.values():
     response = execute(add_person(person['last'], person['first']))
     if successful(response):
       person['pid'] = response['DETAILS']['PERSONID']
       response = execute(add_cred(person['pid'], person['card_id']))
       if not successful(response):
-        print response
+        print(response)
     else:
-      print response
+      print(response)
 
 
 def get_people(resp):
@@ -178,7 +178,7 @@ def do_audit():
     nextkey = response['DETAILS']['NEXTKEY']
   for person in to_process:
     if has_access(person) and person['LASTNAME'] not in people:
-      print '%s,%s' % (person['LASTNAME'], person['FIRSTNAME'])
+      print('%s,%s' % (person['LASTNAME'], person['FIRSTNAME']))
 
 
 #  Last,First,ID,CardNum,Status,Action,Last Date,Last Time,Last Month,Last Day,Last Year,NOTES
@@ -206,8 +206,10 @@ def do_audit_hard():
 if __name__ == '__main__':
   try:  
     # By default, add new members
-    #add_new_members('new2020.csv')
-    do_audit_hard()
+    #add_new_members('new2021.csv')
+    #do_audit_hard()
+    import pdb
+    pdb.set_trace()
   except:
     # Cool exeception handling from https://stackoverflow.com/a/242514
     type, value, tb = sys.exc_info()
