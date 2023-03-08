@@ -1,3 +1,4 @@
 *.pyc
 s2.yaml
-new2018.csv
+*.csv
+*.bak
